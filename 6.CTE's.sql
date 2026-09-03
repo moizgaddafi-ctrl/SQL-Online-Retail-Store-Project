@@ -1,13 +1,14 @@
 -- CTE's
 -- ============================================
-
+-- Find all customers from Lahore
 with customer_lahore AS (
 select * from customers where city='Lahore'
 )
 select * from customer_lahore ;
 
+-- Calculate total spending for each customer
 with customer_total_spending AS(
-select c.customer_name,sum(p.price*o.quantity) as total_spending 
+select customer_name,sum(p.price*o.quantity) as total_spending 
 from customers c inner join orders o on o.customer_id=c.customer_id
 inner join products p  on o.product_id=p.product_id
 
@@ -15,11 +16,13 @@ group by customer_name
 )
 select * from customer_total_spending;
 
+-- Find products priced above 50,000
 with expensive_products AS(
 select * from products where price >50000
 )
 select * from expensive_products;
 
+-- Count orders for each customer
 with customer_order_count AS(
 select c.customer_name,count(o.quantity) as no_of_orders from customers c
 inner join orders o on c.customer_id=o.customer_id
@@ -27,6 +30,7 @@ group by customer_name
 )
 select * from customer_order_count;
 
+-- Calculate total quantity sold for each product
 with product_quantity_sold AS(
 select p.product_id,count(o.quantity) as total_quantity_sold
 from products p 
@@ -35,14 +39,16 @@ group by p.product_id order by product_id ASC
 )
 select * from product_quantity_sold;
 
+-- Find customers with more than 3 orders
 with high_order_customers AS(
 select c.customer_id,c.customer_name,count(o.order_id) as total_orders 
 from customers c 
 inner join orders o on o.customer_id=c.customer_id
 group by customer_id,customer_name
 )
-select * from  high_order_customers where total_orders >3 ;
+select * from high_order_customers where total_orders >3 ;
 
+-- Combine customer and order information
 with customer_orders AS(
 select c.customer_name,c.city,o.order_id,o.order_date
 from customers c  
@@ -50,6 +56,7 @@ inner join orders o on o.customer_id=c.customer_id
 )
 select * from customer_orders;
 
+-- Calculate total spending for each customer
 with customer_spending AS(
 select c.customer_id,sum(o.quantity*p.price) as total_spent 
 from customers c 
@@ -59,6 +66,7 @@ group by customer_name,customer_id
 )
 select * from customer_spending;
 
+-- Calculate total revenue for each product
 with product_revenue AS(
 select p.product_id,p.product_name,sum(o.quantity*p.price) as total_revenue
 from products p 
@@ -67,6 +75,7 @@ group by product_name,product_id
 )
 select * from product_revenue;
 
+-- Calculate customer spending and display customer details
 WITH customer_total_spending AS (
 SELECT 
 o.customer_id,
@@ -85,6 +94,7 @@ INNER JOIN customer_total_spending cts
 ON c.customer_id = cts.customer_id
 ORDER BY cts.total_spent DESC;
 
+-- Combine customer order count and spending
 with customer_orders AS(
 select o.customer_id,count(o.order_id) as total_orders 
 from orders o 
@@ -101,6 +111,7 @@ from customer_orders co
 inner join customer_spending cs
 on cs.customer_id=co.customer_id;
 
+-- Find products with more than 3 units sold
 with product_quantity AS(
 select p.product_name,sum(o.quantity) as quantity_sold 
 from products p 
@@ -115,6 +126,7 @@ where quantity_sold>3
 
 select* from high_selling_products;
 
+-- Find products with revenue above average
 with product_revenue AS (
 select p.product_name,sum(p.price*o.quantity) as total_revenue 
 from products p 
@@ -130,6 +142,7 @@ where total_revenue>
 (select average  
 from average_revenue);
 
+-- Combine customer orders and spending
 WITH customer_orders AS (
 SELECT c.customer_id,c.customer_name,c.city,
 COUNT(o.order_id) AS no_of_orders
@@ -155,6 +168,7 @@ JOIN customer_spending cs
 ON co.customer_id = cs.customer_id
 ORDER BY cs.total_spending DESC;
 
+-- Find products with revenue above average using multiple CTEs
 with product_revenue AS(
 select p.product_id,p.product_name,
 sum(p.price*o.quantity) as revenue
@@ -175,4 +189,3 @@ cross join  average_revenue ar
 where pr.revenue > ar.avg_revenue
 )
 select * from above_average_products ;
-
