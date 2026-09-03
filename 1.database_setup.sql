@@ -23,17 +23,6 @@ product_id int,
 quantity int,
 order_date date
 );
-ALTER TABLE Customers
-MODIFY customer_id int;
-
-ALTER TABLE Products
-MODIFY product_id INT;
-
-ALTER TABLE Orders
-MODIFY order_id INT;
-
-ALTER TABLE orders
-DROP PRIMARY KEY;
 
 -- DATA INSERTION
 -- ============================================
